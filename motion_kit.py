@@ -1,5 +1,10 @@
+from machine import *
+from time import sleep_ms, ticks_ms
+import math
 from micropython import const
-from machine import SoftI2C
+from setting import *
+from utility import *
+
 
 motion_servos_pos = {}
 
@@ -31,20 +36,19 @@ MK_SERVO_S2 = const(1)
 MK_SERVO_S3 = const(2)
 MK_SERVO_S4 = const(3)
 
-class MotionKit():
-    def __init__(self, address=MK_DEFAULT_I2C_ADDRESS):
-        SCL_PIN = machine.Pin(PORTS_DIGITAL[port][0])
-        SDA_PIN = machine.Pin(PORTS_DIGITAL[port][1])
-        self._i2c = SoftI2C(scl=SCL_PIN, sda=SDA_PIN, freq=100000)
+
+class MotionKit:
+    def __init__(self, port, address=MK_DEFAULT_I2C_ADDRESS):
+        scl_pin = machine.Pin(PORTS_DIGITAL[port][0])
+        sda_pin = machine.Pin(PORTS_DIGITAL[port][1])
+        self._i2c = machine.SoftI2C(scl=scl_pin, sda=sda_pin)
         self._addr = address
         self._speeds = [0, 0]
-
-        # check i2c connection
+       
         try:
             who_am_i = self._read_8(MK_REG_WHO_AM_I)
         except OSError:
             who_am_i = 0
-
         if who_am_i != MK_DEFAULT_I2C_ADDRESS:
             raise RuntimeError("Motion kit module not found. Expected: " + str(address) + ", scanned: " + str(who_am_i))
         else:
@@ -171,6 +175,5 @@ class MotionKit():
                 result_array[i] = (raw - (1 << 16))
             else:
                 result_array[i] = raw
-
-mk = MotionKit()
-
+                
+mk = MotionKit(3)
