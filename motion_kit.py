@@ -1,6 +1,5 @@
 from micropython import const
 from machine import SoftI2C
-from yolo_uno import *
 
 motion_servos_pos = {}
 
@@ -34,6 +33,8 @@ MK_SERVO_S4 = const(3)
 
 class MotionKit():
     def __init__(self, address=MK_DEFAULT_I2C_ADDRESS):
+        SCL_PIN = machine.Pin(PORTS_DIGITAL[port][0])
+        SDA_PIN = machine.Pin(PORTS_DIGITAL[port][1])
         self._i2c = SoftI2C(scl=SCL_PIN, sda=SDA_PIN, freq=100000)
         self._addr = address
         self._speeds = [0, 0]
